@@ -22,7 +22,7 @@ class ReportController extends Controller
             return redirect()->back()->with('error', 'Pengaduan ini sudah mendapatkan tanggapan dan tidak dapat dihapus.');
         }
         $report->delete();
-        return redirect()->route('report.article')->with('success', 'Pengaduan berhasil dihapus.');
+        return redirect()->route('reports.article')->with('success', 'Pengaduan berhasil dihapus.');
     }
 
     public function search(Request $request)
@@ -151,7 +151,7 @@ class ReportController extends Controller
      */
     public function detail()
     {
-        $reports = Report::with('user', 'comments')->where('user_id', auth()->user()->id)->get();
+        $reports = Report::with('user', 'comments', 'response')->where('user_id', auth()->user()->id)->get();
         return view('report.detail', compact('reports'));
     }
 

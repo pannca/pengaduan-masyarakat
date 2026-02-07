@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Response_progress;
+use App\Models\ResponseProgress;
 use Illuminate\Http\Request;
 use App\Models\Response;
 
@@ -35,7 +35,7 @@ class ResponseProgressController extends Controller
             'response_progress' => 'required|string|max:1000'
         ]);
 
-        $responseProgress = Response_progress::firstOrNew([
+        $responseProgress = ResponseProgress::firstOrNew([
             'response_id' => $response->id
         ]);
 
@@ -56,7 +56,7 @@ class ResponseProgressController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Response_progress $response_progress)
+    public function show(ResponseProgress $responseProgress)
     {
         //
     }
@@ -64,7 +64,7 @@ class ResponseProgressController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Response_progress $response_progress)
+    public function edit(ResponseProgress $response_progress)
     {
         //
     }
@@ -72,7 +72,7 @@ class ResponseProgressController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Response_progress $response_progress)
+    public function update(Request $request, ResponseProgress $responseProgress)
     {
         //
     }
@@ -80,7 +80,7 @@ class ResponseProgressController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Response_progress $response_progress)
+    public function destroy(ResponseProgress $responseProgress)
     {
         //
     }

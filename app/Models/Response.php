@@ -10,6 +10,7 @@ class Response extends Model
 
     protected $fillable = [
         'report_id',
+        'staff_id',
         'response_status',
         'response_progress'
     ];
@@ -28,6 +29,6 @@ class Response extends Model
 
     public function response_progress()
     {
-        return $this->hasMany(Response_Progress::class);
+        return $this->hasMany(ResponseProgress::class);
     }
 }

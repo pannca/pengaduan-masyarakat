@@ -33,6 +33,11 @@ class Report extends Model
         return $this->hasMany(Comment::class);
     }
 
+    public function response()
+    {
+        return $this->hasOne(Response::class);
+    }
+
     public function responses()
     {
         return $this->hasMany(Response::class);

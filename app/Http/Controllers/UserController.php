@@ -81,9 +81,32 @@ class UserController extends Controller
     }
 
 
-    public function  logout() {
+    public function logout() {
         Auth::logout();
         return redirect()->route('login')->with('success', 'Anda Telah Logout!');
+    }
+
+    public function showRegister()
+    {
+        return view('login.register');
+    }
+
+    public function register(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $user = User::create([
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'GUEST',
+        ]);
+
+        Auth::login($user);
+
+        return redirect()->route('reports.article')->with('success', 'Akun berhasil dibuat!');
     }
 
     /**

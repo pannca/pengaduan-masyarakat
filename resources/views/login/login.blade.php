@@ -4,7 +4,7 @@
 <div class="d-flex justify-content-center align-items-center">
     <div class="card shadow-lg p-4" style="max-width: 400px; margin-top: 50px;">
         <h3 class="text-center mb-4">Login / Daftar Akun</h3>
-        
+
         <!-- Pesan error atau sukses -->
         @if(session('error'))
             <div class="alert alert-danger" role="alert">
@@ -41,9 +41,9 @@
             <hr>
 
             <!-- Tombol Register dengan Icon -->
-            <button type="submit" name="register" class="btn btn-success w-100">
+            <a href="{{ route('register') }}" class="btn btn-success w-100">
                 <i class="fas fa-user-plus"></i> Daftar Akun
-            </button>
+            </a>
         </form>
     </div>
 </div>

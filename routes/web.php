@@ -28,12 +28,16 @@ Route::get('/', function () {
 });
 
 Route::get('/login', [UserController::class, 'index'])->name('login');
+Route::get('/register', [UserController::class, 'showRegister'])->name('register');
+Route::post('/register', [UserController::class, 'register'])->name('register.store');
 Route::get('/logout', [UserController::class, 'logout'])->name('logout');
 Route::post('/login', [UserController::class, 'loginRegister'])->name('login.register');
 Route::get('/user', [UserController::class, 'index'])->name('utama');
 Route::get('/chart', [ChartController::class, 'index'])->name('chart');
 
 Route::get('/response', [ResponseController::class, 'index'])->name('response');
+Route::get('/response/check', [ResponseController::class, 'check'])->name('response.check');
+Route::get('/response/export', [ResponseController::class, 'export'])->name('response.export');
 Route::get('/response/detail/{id}', [ResponseController::class, 'show'])->name('response.show');
 Route::post('/response/store/{id}', [ResponseController::class, 'store'])->name('response.status');
 Route::patch('/response/update/{id}', [ResponseController::class, 'update'])->name('response.update.status');

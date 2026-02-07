@@ -9,7 +9,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Response_progress extends Model
+class ResponseProgress extends Model
 {
     protected $fillable = [
         'response_id',

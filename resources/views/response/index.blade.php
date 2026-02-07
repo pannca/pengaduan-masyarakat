@@ -8,17 +8,23 @@
                     <h5 class="mb-3">Pencarian dan Ekspor Data</h5>
 
                     <!-- Form untuk ekspor -->
-                    <form method="GET" action="{{ route('report.export') }}" class="row g-3 mt-3">
-                        <div class="col-md-8">
-                            <label for="province-export" class="form-label">Export Data Berdasarkan Provinsi:</label>
-                            <select name="province" id="province-export" class="form-select">
-                                <option value="">Semua Provinsi</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-success w-100" id="export-button" disabled>Export
-                                Excel</button>
-                        </div>
+                    <form action="{{ route('response.export') }}" method="GET" id="exportForm">
+                        @if (auth()->user()->role === 'STAFF')
+                            <div class="mb-3">
+                                <label for="regency" class="form-label">Export Data Berdasarkan Kabupaten/Kota:</label>
+                                <select name="regency" id="regency" class="form-select">
+                                    <option value="all">Semua Kabupaten/Kota</option>
+                                </select>
+                            </div>
+                        @else
+                            <div class="mb-3">
+                                <label for="province" class="form-label">Export Data Berdasarkan Provinsi:</label>
+                                <select name="province" id="province" class="form-select">
+                                    <option value="all">Semua Provinsi</option>
+                                </select>
+                            </div>
+                        @endif
+                        <button type="submit" class="btn btn-success"><i class="fas fa-download"></i> Export CSV</button>
                     </form>
                 </div>
             </div>
@@ -28,7 +34,7 @@
             @forelse($responses as $index => $report)
                 <div class="col-md-6 col-lg-4 mb-4">
                     <div class="card shadow-sm border-0 rounded">
-                        <img src="{{ asset('storage/' . ($report->image ?? 'default.jpg')) }}"
+                        <img src="{{ $report->image_url }}"
                             alt="Image of {{ $report->user->email ?? 'No Name' }}" class="card-img-top rounded-top"
                             style="object-fit: cover; height: 200px;">
                         <div class="card-body">
@@ -57,41 +63,97 @@
         </div>
     </div>
 
-    @push('script')
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script>
-            $(document).ready(function() {
-                const apiURL = 'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json';
-
-                // Fungsi untuk mengambil data provinsi dan mengisi dropdown
-                function fetchProvinces(selectElementId) {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            @if (auth()->user()->role === 'STAFF')
+                // Load kabupaten untuk STAFF berdasarkan provinsi mereka
+                const provinceId = '{{ $staffProvince ?? "" }}';
+                
+                if (provinceId) {
                     $.ajax({
-                        url: apiURL,
+                        url: `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`,
                         method: 'GET',
                         success: function(data) {
-                            // Tambahkan opsi ke dropdown
-                            data.forEach(function(province) {
-                                $(selectElementId).append(
-                                    `<option value="${province.id}">${province.name}</option>`
+                            data.forEach(function(regency) {
+                                $('#regency').append(
+                                    `<option value="${regency.id}">${regency.name}</option>`
                                 );
                             });
                         },
                         error: function() {
-                            console.error('Gagal mengambil data provinsi.');
+                            console.error('Gagal mengambil data kabupaten.');
                         }
                     });
                 }
 
-                // Ambil data provinsi untuk dropdown search dan export
-                fetchProvinces('#province-search');
-                fetchProvinces('#province-export');
-
-                // Aktifkan tombol export jika provinsi dipilih
-                $('#province-export').on('change', function() {
-                    const isSelected = $(this).val() !== '';
-                    $('#export-button').prop('disabled', !isSelected);
+                // Validasi sebelum export untuk STAFF
+                $('#exportForm').on('submit', function(e) {
+                    const regencyId = $('#regency').val();
+                    
+                    if (regencyId !== 'all') {
+                        e.preventDefault();
+                        
+                        // Cek apakah ada laporan di kabupaten tersebut
+                        $.ajax({
+                            url: '{{ route("response.check") }}',
+                            method: 'GET',
+                            data: { regency: regencyId },
+                            success: function(response) {
+                                if (response.count === 0) {
+                                    alert('Tidak ada keluhan di kabupaten/kota yang dipilih!');
+                                } else {
+                                    $('#exportForm').off('submit').submit();
+                                }
+                            },
+                            error: function() {
+                                alert('Gagal memeriksa data. Silakan coba lagi.');
+                            }
+                        });
+                    }
                 });
-            });
-        </script>
-    @endpush
+            @else
+                // Load provinsi untuk HEAD_STAFF
+                $.ajax({
+                    url: 'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json',
+                    method: 'GET',
+                    success: function(data) {
+                        data.forEach(function(province) {
+                            $('#province').append(
+                                `<option value="${province.id}">${province.name}</option>`
+                            );
+                        });
+                    },
+                    error: function() {
+                        console.error('Gagal mengambil data provinsi.');
+                    }
+                });
+
+                // Validasi sebelum export untuk HEAD_STAFF
+                $('#exportForm').on('submit', function(e) {
+                    const provinceId = $('#province').val();
+                    
+                    if (provinceId !== 'all') {
+                        e.preventDefault();
+                        
+                        $.ajax({
+                            url: '{{ route("response.check") }}',
+                            method: 'GET',
+                            data: { province: provinceId },
+                            success: function(response) {
+                                if (response.count === 0) {
+                                    alert('Tidak ada keluhan di provinsi yang dipilih!');
+                                } else {
+                                    $('#exportForm').off('submit').submit();
+                                }
+                            },
+                            error: function() {
+                                alert('Gagal memeriksa data. Silakan coba lagi.');
+                            }
+                        });
+                    }
+                });
+            @endif
+        });
+    </script>
 @endsection

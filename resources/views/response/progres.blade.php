@@ -98,19 +98,19 @@
                     <!-- Jika response_status null -->
                     <form action="{{ route('response.status', $report->id) }}" method="POST">
                         @csrf
-                        <input type="hidden" name="response_status" value="ON_PROGRESS">
+                        <input type="hidden" name="response_status" value="ON_PROCESS">
                         <button class="btn btn-primary" type="submit">Berikan Progres</button>
                     </form>
                     <form action="{{ route('response.status', $report->id) }}" method="POST">
                         @csrf
-                        <input type="hidden" name="response_status" value="REJECTED">
+                        <input type="hidden" name="response_status" value="REJECT">
                         <button class="btn btn-danger" type="submit">Reject</button>
                     </form>
-                    @elseif($report->response?->response_status === 'ON_PROGRESS')
+                    @elseif($report->response?->response_status === 'ON_PROCESS')
                     <!-- Jika response_status ada -->
                     <form action="{{ route('response.status', $report->id) }}" method="POST">
                         @csrf
-                        <input type="hidden" name="response_status" value="ON_PROGRESS">
+                        <input type="hidden" name="response_status" value="ON_PROCESS">
                         <button class="btn btn-primary" type="submit">Berikan Progres</button>
                     </form>
                     <form action="{{ route('response.update.status', $report->id) }}" method="POST">
